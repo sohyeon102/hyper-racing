@@ -1,18 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private int gas = 100;
+    [SerializeField] private float moveSpeed = 1f;
+    
+    public int Gas { get => gas; }     //Gas 정보
+
+    private void Start()
     {
-        
+        StartCoroutine(GasCoroutine());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator GasCoroutine()
     {
-        
+        while (true)
+        {
+            gas -= 10;
+            if (gas <= 0)
+            yield return new WaitForSeconds(1f);
+        }
+        // TODO: 게임종료
+    }
+    
+    /// <summary>
+    /// 자돋차 이동 메세드
+    /// </summary>
+    /// <param name="direction"></param>
+    public void Move(float direction)
+    {
+        transform.Translate(Vector3.right * (direction * Time.deltaTime));
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -2f, 2f), 0, transform.position.z);
+    }
+    
+    /// <summary>
+    /// 가스 아이템 획득시 호출되는 메서드
+    /// </summary>
+    /// <param name="other"></param>
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Gas"))
+        {
+            gas += 30;
+            // TODO: 가스 아이템 제거
+        }
     }
 }
